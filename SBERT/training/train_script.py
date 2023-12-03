@@ -1,10 +1,3 @@
-"""
-Train script for a single file
-
-Need to set the TPU address first:
-export XRT_TPU_CONFIG="localservice;0;localhost:51011"
-"""
-
 import torch.multiprocessing as mp
 import threading
 import time
