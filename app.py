@@ -10,8 +10,8 @@ import datetime
 import os
 from waitress import serve
 
-from utils import chatbot_response
-
+from IntentModel import chatbot_response
+from SBERT import SBERT_chatbot_response
 
 if not os.path.exists(os.path.join(os.getcwd(), 'logs')):
     os.mkdir(os.path.join(os.getcwd(), 'logs'))
@@ -28,14 +28,22 @@ api = Api(app)
 
 
 
-class MessagingRouter(Resource):
+class MessagingRouterIntent(Resource):
     def post(self):
         userText = request.form.get('msg')
         print(userText)
-        reply = chatbot_response(userText)
+        reply = chatbot_response(userText, 0.8)
+        return {"Reply" : reply}
+
+class MessagingRouterSBERT(Resource):
+    def post(self):
+        userText = request.form.get('msg')
+        print(userText)
+        reply = SBERT_chatbot_response(userText, 0.8)
         return {"Reply" : reply}
     
-api.add_resource(MessagingRouter, "/message")
+api.add_resource(MessagingRouterIntent, "/message-intent")
+api.add_resource(MessagingRouterSBERT, "/message-sbert")
 
 if __name__ =="__main__":
     serve(app, host="0.0.0.0", port=5000)

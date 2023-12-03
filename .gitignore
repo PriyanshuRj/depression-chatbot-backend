@@ -1,2 +1,5 @@
 .venv
 logs
+SBERT/similarity-LM/pytorch_model.bin
+SBERT/similarity-LM/rust_model.ot
+__pycache__

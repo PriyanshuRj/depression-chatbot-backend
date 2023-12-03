@@ -9,12 +9,21 @@ lemmatizer = WordNetLemmatizer()
 
 import pickle
 import numpy as np
+import os
 from keras.models import load_model
 
-model = load_model('model.h5')
-intents = json.loads(open('intents.json').read())
-words = pickle.load(open('texts.pkl','rb'))
-classes = pickle.load(open('labels.pkl','rb'))
+BASE_PATH = os.getcwd()
+BASE_PATH = os.path.join(BASE_PATH, 'IntentModel')
+
+MODEL_PATH = os.path.join(BASE_PATH, 'model.h5')
+INTENT_PATH = os.path.join(BASE_PATH, 'intents.json')
+WORD_PATH = os.path.join(BASE_PATH, 'texts.pkl')
+CLASSES_PATH = os.path.join(BASE_PATH, 'labels.pkl')
+
+model = load_model(MODEL_PATH)
+intents = json.loads(open(INTENT_PATH).read())
+words = pickle.load(open(WORD_PATH,'rb'))
+classes = pickle.load(open(CLASSES_PATH,'rb'))
 
 def clean_up_sentence(sentence):
     # tokenize the pattern - split words into array
@@ -38,12 +47,14 @@ def bow(sentence, words, show_details=True):
                     print ("found in bag: %s" % w)
     return(np.array(bag))
 
-def predict_class(sentence, model):
+def predict_class(sentence, model, threshold):
+
     # filter out predictions below a threshold
     p = bow(sentence, words,show_details=False)
     res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.8
+    ERROR_THRESHOLD = threshold
     results = [[i,r] for i,r in enumerate(res) if r>ERROR_THRESHOLD]
+
     # sort by strength of probability
     results.sort(key=lambda x: x[1], reverse=True)
     return_list = []
@@ -52,18 +63,18 @@ def predict_class(sentence, model):
     return return_list
 
 def getResponse(ints, intents_json):
-    print(ints)
+    if(len(ints)==0):
+        return "Sorry can't Process Your Message the bot is still in training"
     tag = ints[0]['intent']
     list_of_intents = intents_json['intents']
 
     for i in list_of_intents:
-        # print(i)
         if(i['tag']== tag):
             result = random.choice(i['responses'])
             break
     return result
 
-def chatbot_response(msg):
-    ints = predict_class(msg, model)
+def chatbot_response(msg, threshold):
+    ints = predict_class(msg, model, threshold)
     res = getResponse(ints, intents)
     return res
