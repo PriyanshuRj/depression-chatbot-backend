@@ -1,6 +1,7 @@
 import nltk
 nltk.download('popular')
 
+
 import json
 import random
 
@@ -64,6 +65,8 @@ def predict_class(sentence, model, threshold):
     return return_list
 
 def getResponse(ints, intents_json):
+    print(ints)
+    result = ""
     if(len(ints)==0):
         return "Sorry can't Process Your Message the bot is still in training"
     tag = ints[0]['intent']
@@ -76,6 +79,7 @@ def getResponse(ints, intents_json):
     return result
 
 def chatbot_response(msg, threshold):
+    print(msg)
     ints = predict_class(msg, model, threshold)
     res = getResponse(ints, intents)
     return res

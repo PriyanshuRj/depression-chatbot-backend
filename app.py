@@ -34,14 +34,12 @@ api = Api(app)
 
 class MessagingRouterIntent(Resource):
     def post(self):
-        print(request)
         if(request.form):
             userText = request.form.get('msg')
  
         if(request.data):
             userText = json.loads(request.data)['msg']
             print(request.data)
-        print(userText)
         reply = chatbot_response(userText, 0.4)
         return {"Reply" : reply}
 
