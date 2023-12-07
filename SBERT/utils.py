@@ -38,36 +38,35 @@ def cos_sim(a: Tensor, b: Tensor):
     return torch.mm(a_norm, b_norm.transpose(0, 1))
 
 def getResponse(ints, intents_json):
-    print(ints)
-    if(len(ints)==0):
-        return "Sorry can't Process Your Message the bot is still in training"
-    tag = ints[0]
-    list_of_intents = intents_json['intents']
-
-    for i in list_of_intents:
-        if(i['tag']== tag):
-            result = random.choice(i['responses'])
-            break
+    # print(intents_json)
+    result = random.choice(intents_json["intents"][ints]['responses'])
+    
     return result
 
 def SBERT_chatbot_response(message, threshold):
 
     message_emb = model.encode(message)
-    doc_emb = model.encode(classes)
+    # doc_emb = model.encode(classes)
+    list_of_intents = intents['intents']
 
-    #Compute dot score between query and all document embeddings
-    scores = cos_sim(message_emb, doc_emb)[0].cpu().tolist()
-
-    #Combine docs & scores
-    doc_score_pairs = list(zip(classes, scores))
-
-    #Sort by decreasing score
-    doc_score_pairs = sorted(doc_score_pairs, key=lambda x: x[1], reverse=True)
-
-    #Output passages & scores
     
+    embidings = {}
+    sentences = []
+    for i in range(len(list_of_intents)):
+        for j in list_of_intents[i]["patterns"]:
+            embidings[j] = i
+            sentences.append(j)
+        
+    doc_emb = model.encode(sentences)
+
+    scores = cos_sim(message_emb, doc_emb)[0].cpu().tolist()
+    doc_score_pairs = list(zip(sentences, scores))
+    doc_score_pairs = sorted(doc_score_pairs, key=lambda x: x[1], reverse=True)
+    
+    print(embidings[doc_score_pairs[0][0]])
+    #Output passages & scores
     if(doc_score_pairs[0][1] > threshold):
-        res = getResponse(doc_score_pairs[0], intents)
+        res = getResponse(embidings[doc_score_pairs[0][0]], intents)
         return res
     
     else :

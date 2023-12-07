@@ -53,6 +53,7 @@ def predict_class(sentence, model, threshold):
     p = bow(sentence, words,show_details=False)
     res = model.predict(np.array([p]))[0]
     ERROR_THRESHOLD = threshold
+    
     results = [[i,r] for i,r in enumerate(res) if r>ERROR_THRESHOLD]
 
     # sort by strength of probability

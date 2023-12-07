@@ -326,12 +326,10 @@ if __name__ == "__main__":
     print("Start processes:", args.nprocs)
     xmp.spawn(train_function, args=(args, queue), nprocs=args.nprocs, start_method='fork')
     print("Training done")
-    print("It might be that not all processes exit automatically. In that case you must manually kill this process.")
-    print("With 'pkill python' you can kill all remaining python processes")
     p.kill()
     exit()
 
 
 
 # Script was called via:
-#python train_many_data_files_v2.py --steps 1000000 --batch_size 128 --model microsoft/MiniLM-L12-H384-uncased train_data_configs/all_datasets_v4.json output/all_datasets_v4_MiniLM-L12-H384-uncased-batch128
+#py train_script.py --steps 1000000 --batch_size 128 --model microsoft/MiniLM-L12-H384-uncased train_data_configs/all_datasets_v4.json output/all_datasets_v4_MiniLM-L12-H384-uncased-batch128
